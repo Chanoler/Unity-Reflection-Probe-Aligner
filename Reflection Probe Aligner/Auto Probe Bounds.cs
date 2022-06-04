@@ -9,11 +9,15 @@ public class AutoProbeAligner : EditorWindow
     private bool eyeHeight = true;
     private float eyeHeightOffset = 1.8f;
 
-    // Add menu named "My Window" to the Window menu
-    [MenuItem("Tools/ReflectionProbe Aligner")]
+    private GUIContent marginContent = new GUIContent("Margin", "Grow the bounds by this amount after encapsulating all renderers");
+    private GUIContent moveProbeContent = new GUIContent("Move Probe", "Move the probe to the center of the bounds");
+    private GUIContent eyeHeightContent = new GUIContent("Eye Height", "Move the probe to the player's eye height instead of the geometric center");
+    private GUIContent eyeHeightOffsetContent = new GUIContent("Eye Height Offset", "The height of the player's eye relative to the bottom of the bounds");
+
+    [MenuItem("Tools/Reflection Probe Aligner")]
     static void Init()
     {
-        // Get existing open window or if none, make a new one:
+        // Get or create the window
         AutoProbeAligner window = (AutoProbeAligner)EditorWindow.GetWindow(typeof(AutoProbeAligner));
         window.titleContent = new GUIContent("Reflection Probe Aligner");
         window.Show();
@@ -21,37 +25,32 @@ public class AutoProbeAligner : EditorWindow
 
     void OnGUI()
     {
-        //Display the Settings label
+        //Show the settings
         GUILayout.Label("Settings", EditorStyles.boldLabel);
-
-        //Display the margin input field
-        margin = EditorGUILayout.FloatField(new GUIContent("Margins", "The amount of extra area to encapsulate to ensure objects on the walls receive reflection probing"), margin);
-
-        //Display the move probe checkbox
-        moveProbe = EditorGUILayout.Toggle(new GUIContent("Move Probe", "Move the probe to the center of the bounds"), moveProbe);
+        margin = EditorGUILayout.FloatField(marginContent, margin);
+        moveProbe = EditorGUILayout.Toggle(moveProbeContent, moveProbe);
 
         //Display the eye height checkbox only if the move probe checkbox is checked
         if (moveProbe)
         {
-            //Eye height checkbox
-            eyeHeight = EditorGUILayout.Toggle(new GUIContent("Eye Height", "Move the probe to the center of the bounds"), eyeHeight);
+            eyeHeight = EditorGUILayout.Toggle(eyeHeightContent, eyeHeight);
 
             //Display the eye height offset input field only if the eye height checkbox is checked
             if (eyeHeight)
             {
-                eyeHeightOffset = EditorGUILayout.FloatField(new GUIContent("Eye Height Offset", "The distance from the floor to the eye height"), eyeHeightOffset);
+                eyeHeightOffset = EditorGUILayout.FloatField(eyeHeightOffsetContent, eyeHeightOffset);
             }
         }
 
-        //Button that will align all the probes
-        if (GUILayout.Button("Align Probes"))
+        //Button to align the probe
+        if (GUILayout.Button("Align Probe"))
         {
-            AlignProbes();
+            AlignProbe();
         }
 
     }
 
-    private void AlignProbes()
+    private void AlignProbe()
     {
         //Get the selected objects
         GameObject[] selectedObjects = Selection.gameObjects;
@@ -127,6 +126,7 @@ public class AutoProbeAligner : EditorWindow
         //Add the bounds of each object to the total bounds
         for (int i = 1; i < bounds.Length; i++)
         {
+            //I can never get Bounds.Encapsulate to work for some reason so I just do it manually
             totalBounds.min = Vector3.Min(totalBounds.min, bounds[i].min);
             totalBounds.max = Vector3.Max(totalBounds.max, bounds[i].max);
         }
