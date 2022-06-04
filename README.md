@@ -1,5 +1,5 @@
 # Unity-Reflection-Probe-Aligner
-Simple editor script to move and scale a reflection probe to the bounds of a room.
+Simple editor script to move and scale a reflection probe to the bounds of a room. Optionally puts the reflection probe at the expected player eye height.
 Works best with Box Projection.
 
 Instructions:
