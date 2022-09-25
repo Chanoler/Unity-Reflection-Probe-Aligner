@@ -88,6 +88,10 @@ public class AutoProbeAligner : EditorWindow
             Debug.LogError("No probe selected");
             return;
         }
+        
+        //Undo support
+        Undo.RecordObject(probe.transform, "Move Probe");
+        Undo.RecordObject(probe, "Align Probe");
 
         //Remove objects without renderers
         List<GameObject> objectsToAlign = new List<GameObject>();
